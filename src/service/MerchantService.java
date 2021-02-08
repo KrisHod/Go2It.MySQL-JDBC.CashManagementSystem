@@ -49,4 +49,26 @@ public class MerchantService {
         }
         return null;
     }
+
+    public List<Merchant> createMerchantList() {
+        List<Merchant> merchantList = new ArrayList<>();
+        List<String> merchantData = getData();
+
+        for (int i = 0; i < merchantData.size(); i += 11) {
+            int id = Integer.parseInt(merchantData.get(i));
+            String name = merchantData.get(i + 1);
+            String bankName = merchantData.get(i + 2);
+            String swift = merchantData.get(i + 3);
+            String account = merchantData.get(i + 4);
+            double charge = Double.parseDouble(merchantData.get(i + 5));
+            int period = Integer.parseInt(merchantData.get(i + 6));
+            double minSum = Double.parseDouble(merchantData.get(i + 7));
+            double needToSend = merchantData.get(i + 8) == null ? 0 : Double.parseDouble(merchantData.get(i + 8));
+            double sent = merchantData.get(i + 9) == null ? 0 : Double.parseDouble(merchantData.get(i + 9));
+            LocalDate lastSent = merchantData.get(i + 10) == null ? null : LocalDate.parse(merchantData.get(i + 10));
+
+            merchantList.add(new Merchant(id, name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent));
+        }
+        return merchantList;
+    }
 }
