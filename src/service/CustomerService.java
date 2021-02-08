@@ -1,7 +1,6 @@
 package service;
 
 import entities.Customer;
-import entities.Merchant;
 import utils.DBUtil;
 
 import java.sql.Connection;
@@ -14,7 +13,7 @@ import java.util.List;
 
 public class CustomerService {
 
-    public static List<String> getData() {
+    public  List<String> getData() {
         Connection con = null;
         PreparedStatement stmt = null;
         List<String> data = new ArrayList<>();
@@ -63,5 +62,15 @@ public class CustomerService {
             customerList.add(new Customer(id, name, address, email, ccNo, ccType, maturity));
         }
         return customerList;
+    }
+
+    public Customer getById (int id){
+        List<Customer> customerList = createCustomerList();
+        for (Customer cus: customerList) {
+            if (cus.getId()==id){
+                return cus;
+            }
+        }
+        return null;
     }
 }
