@@ -48,5 +48,24 @@ public class PaymentService {
         }
         return null;
     }
-    
+
+    public List<Payment> createPaymentList() {
+        List<Payment> paymentList = new ArrayList<>();
+        List<String> paymentData = getData();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        for (int i = 0; i < paymentData.size(); i += 7) {
+            int id = Integer.parseInt(paymentData.get(i));
+            LocalDateTime dt = LocalDateTime.parse(paymentData.get(i + 1), formatter);
+            int merchantId = Integer.parseInt(paymentData.get(i + 2));
+            int customerId = Integer.parseInt(paymentData.get(i + 3));
+            String goods = paymentData.get(i + 4);
+            double sumPaid = Double.parseDouble(paymentData.get(i + 5));
+            double chargePaid = paymentData.get(i + 6) == null ? 0 : Double.parseDouble(paymentData.get(i + 6));
+
+            paymentList.add(new Payment(id, dt, merchantService.getById(merchantId),
+                    customerService.getById(customerId), goods, sumPaid, chargePaid));
+        }
+        return paymentList;
+    }
 }
