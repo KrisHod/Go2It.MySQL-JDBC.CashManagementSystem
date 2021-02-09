@@ -13,14 +13,11 @@ import java.util.List;
 
 public class MerchantService {
 
-    public static List<String> getData() {
-        Connection con = null;
-        PreparedStatement stmt = null;
+    public List<String> getAll() {
         List<String> data = new ArrayList<>();
 
-        try {
-            con = DBUtil.getConnection();
-            stmt = con.prepareStatement("SELECT * FROM merchant");
+        try (Connection con = DBUtil.getConnection()) {
+            PreparedStatement stmt = con.prepareStatement("SELECT * FROM merchant");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 data.add(rs.getString("id"));
@@ -38,21 +35,13 @@ public class MerchantService {
             return data;
         } catch (SQLException ex) {
             System.out.println("Error " + ex.getMessage());
-        } finally {
-            if (con != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e2) {
-                    e2.printStackTrace();
-                }
-            }
         }
         return null;
     }
 
     public List<Merchant> createMerchantList() {
         List<Merchant> merchantList = new ArrayList<>();
-        List<String> merchantData = getData();
+        List<String> merchantData = getAll();
 
         for (int i = 0; i < merchantData.size(); i += 11) {
             int id = Integer.parseInt(merchantData.get(i));
@@ -70,5 +59,15 @@ public class MerchantService {
             merchantList.add(new Merchant(id, name, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent));
         }
         return merchantList;
+    }
+
+    public Merchant getById(int id) {
+        List<Merchant> merchantList = createMerchantList();
+        for (Merchant mer : merchantList) {
+            if (mer.getId() == id) {
+                return mer;
+            }
+        }
+        return null;
     }
 }
