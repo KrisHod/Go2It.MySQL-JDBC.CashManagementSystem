@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class Merchant {
     private int id;
+    private String name;
     private String bankName;
     private String swift;
     private String account;
@@ -15,9 +16,11 @@ public class Merchant {
     private double sent;
     private LocalDate lastSent;
 
-    public Merchant(int id, String bankName, String swift, String account, double charge, int period,
-                    double minSum, double needToSend, double sent, LocalDate lastSent) {
+    public Merchant(int id, String name, String bankName, String swift,
+                    String account, double charge, int period, double minSum,
+                    double needToSend, double sent, LocalDate lastSent) {
         this.id = id;
+        this.name = name;
         this.bankName = bankName;
         this.swift = swift;
         this.account = account;
@@ -35,6 +38,14 @@ public class Merchant {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getBankName() {
@@ -112,20 +123,21 @@ public class Merchant {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Merchant)) return false;
         Merchant merchant = (Merchant) o;
-        return id == merchant.id && Double.compare(merchant.charge, charge) == 0 && period == merchant.period && Double.compare(merchant.minSum, minSum) == 0 && Double.compare(merchant.needToSend, needToSend) == 0 && Double.compare(merchant.sent, sent) == 0 && Objects.equals(bankName, merchant.bankName) && Objects.equals(swift, merchant.swift) && Objects.equals(account, merchant.account) && Objects.equals(lastSent, merchant.lastSent);
+        return getId() == merchant.getId() && Double.compare(merchant.getCharge(), getCharge()) == 0 && getPeriod() == merchant.getPeriod() && Double.compare(merchant.getMinSum(), getMinSum()) == 0 && Double.compare(merchant.getNeedToSend(), getNeedToSend()) == 0 && Double.compare(merchant.getSent(), getSent()) == 0 && Objects.equals(getName(), merchant.getName()) && Objects.equals(getBankName(), merchant.getBankName()) && Objects.equals(getSwift(), merchant.getSwift()) && Objects.equals(getAccount(), merchant.getAccount()) && Objects.equals(getLastSent(), merchant.getLastSent());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, bankName, swift, account, charge, period, minSum, needToSend, sent, lastSent);
+        return Objects.hash(getId(), getName(), getBankName(), getSwift(), getAccount(), getCharge(), getPeriod(), getMinSum(), getNeedToSend(), getSent(), getLastSent());
     }
 
     @Override
     public String toString() {
         return "Merchant{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
                 ", bankName='" + bankName + '\'' +
                 ", swift='" + swift + '\'' +
                 ", account='" + account + '\'' +

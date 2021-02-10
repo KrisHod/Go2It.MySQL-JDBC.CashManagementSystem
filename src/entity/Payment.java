@@ -6,17 +6,18 @@ import java.util.Objects;
 public class Payment {
     private int id;
     private LocalDateTime dt;
-    private int merchantId;
-    private int customerId;
+    private Merchant merchant;
+    private Customer customer;
     private String goods;
     private double sumPaid;
     private double chargePaid;
 
-    public Payment(int id, LocalDateTime dt, int merchantId, int customerId, String goods, double sumPaid, double chargePaid) {
+    public Payment(int id, LocalDateTime dt, Merchant merchant, Customer customer,
+                   String goods, double sumPaid, double chargePaid) {
         this.id = id;
         this.dt = dt;
-        this.merchantId = merchantId;
-        this.customerId = customerId;
+        this.merchant = merchant;
+        this.customer = customer;
         this.goods = goods;
         this.sumPaid = sumPaid;
         this.chargePaid = chargePaid;
@@ -38,20 +39,20 @@ public class Payment {
         this.dt = dt;
     }
 
-    public int getMerchantId() {
-        return merchantId;
+    public Merchant getMerchant() {
+        return merchant;
     }
 
-    public void setMerchantId(int merchantId) {
-        this.merchantId = merchantId;
+    public void setMerchant(Merchant merchant) {
+        this.merchant = merchant;
     }
 
-    public int getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public String getGoods() {
@@ -81,14 +82,14 @@ public class Payment {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Payment)) return false;
         Payment payment = (Payment) o;
-        return id == payment.id && merchantId == payment.merchantId && customerId == payment.customerId && Double.compare(payment.sumPaid, sumPaid) == 0 && Double.compare(payment.chargePaid, chargePaid) == 0 && Objects.equals(dt, payment.dt) && Objects.equals(goods, payment.goods);
+        return getId() == payment.getId() && Double.compare(payment.getSumPaid(), getSumPaid()) == 0 && Double.compare(payment.getChargePaid(), getChargePaid()) == 0 && Objects.equals(getDt(), payment.getDt()) && Objects.equals(getMerchant(), payment.getMerchant()) && Objects.equals(getCustomer(), payment.getCustomer()) && Objects.equals(getGoods(), payment.getGoods());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dt, merchantId, customerId, goods, sumPaid, chargePaid);
+        return Objects.hash(getId(), getDt(), getMerchant(), getCustomer(), getGoods(), getSumPaid(), getChargePaid());
     }
 
     @Override
@@ -96,8 +97,8 @@ public class Payment {
         return "Payment{" +
                 "id=" + id +
                 ", dt=" + dt +
-                ", merchantId=" + merchantId +
-                ", customerId=" + customerId +
+                ", merchant=" + merchant +
+                ", customer=" + customer +
                 ", goods='" + goods + '\'' +
                 ", sumPaid=" + sumPaid +
                 ", chargePaid=" + chargePaid +

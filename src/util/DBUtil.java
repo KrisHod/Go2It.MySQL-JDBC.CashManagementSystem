@@ -5,17 +5,20 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class DBUtil {
-    public static Connection getConnection() throws IOException, SQLException {
+    public static Connection getConnection() throws SQLException {
         Connection conn;
         Properties props = new Properties();
         try (BufferedReader in = Files.newBufferedReader(Paths.get("app.properties"), Charset.forName("UTF-8"))) {
             props.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         String dbUrl = props.getProperty("dbUrlAddress");
         String userName = props.getProperty("userName");
@@ -24,3 +27,4 @@ public class DBUtil {
         return conn;
     }
 }
+
