@@ -49,4 +49,20 @@ public class PaymentRepository {
         }
         return totalSum;
     }
+
+    public void addPayment(Payment payment) {
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement stmt = con.prepareStatement("INSERT INTO payments " +
+                     "(dt, merchantId, customerId, goods, sumPaid, chargePaid) values(?, ?, ?, ?, ?, ?)")) {
+            stmt.setTimestamp(1, Timestamp.valueOf(payment.getDt()));
+            stmt.setInt(2, payment.getMerchant().getId());
+            stmt.setInt(3, payment.getCustomer().getId());
+            stmt.setString(4, payment.getGoods());
+            stmt.setDouble(5, payment.getSumPaid());
+            stmt.setDouble(6, payment.getSumPaid() * payment.getMerchant().getCharge() / 100);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("Error " + ex.getMessage());
+        }
+    }
 }
