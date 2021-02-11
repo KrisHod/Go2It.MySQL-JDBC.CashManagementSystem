@@ -2,11 +2,9 @@ package util;
 
 import entity.Customer;
 import entity.Merchant;
+import entity.Payment;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,5 +51,24 @@ public class MerchantRepository {
             System.out.println("Error " + ex.getMessage());
         }
         return null;
+    }
+
+    public void update(Payment payment) {
+        double needToSend = payment.getMerchant().getNeedToSend() + (payment.getSumPaid() - payment.getMerchant().getCharge()); //pick out to another method???
+        PreparedStatement stmt = null;
+        try (Connection con = DBUtil.getConnection()) {
+            if (needToSend > payment.getMerchant().getMinSum()) {
+                stmt = con.prepareStatement("UPDATE merchant SET needToSend = ?, sent = ?, lastSent = ? WHERE id =" + payment.getMerchant().getId());
+                stmt.setDouble(1, 0);                                           //reset value of needToSend
+                payment.getMerchant().setSent(payment.getMerchant().getSent() + needToSend);   //add this sum(needToSend) to existing amount(sent)
+                stmt.setDouble(2, payment.getMerchant().getSent());
+                stmt.setDate(3, java.sql.Date.valueOf(payment.getDt().toLocalDate())); //update the date of the last transaction
+            } else {
+                stmt = con.prepareStatement("UPDATE merchant SET needToSend = ? WHERE id = " + payment.getMerchant().getId());
+                stmt.setDouble(1, needToSend);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error " + ex.getMessage());
+        }
     }
 }
