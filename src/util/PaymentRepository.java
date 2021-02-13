@@ -92,5 +92,27 @@ public class PaymentRepository {
         return payments;
     }
 
-    
+    public List<Payment> getByCustomer (Customer customer){
+        List<Payment> payments = new ArrayList<>();
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement stmt = con.prepareStatement("SELECT * FROM payment WHERE " + customer.getId() )) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                Timestamp dtStamp = rs.getTimestamp("dt");
+                LocalDateTime dt = dtStamp.toLocalDateTime();
+                int merchantId = rs.getInt("merchantId");
+                int customerId = rs.getInt("customerId");
+                String goods = rs.getString("goods");
+                double sumPaid = rs.getDouble("sumPaid");
+                double chargePaid = rs.getDouble("chargePaid");
+
+                payments.add(new Payment(id, dt, merchantRepository.getById(id), customer, goods, sumPaid, chargePaid));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error " + ex.getMessage());
+        }
+        return payments;
+    }
 }
