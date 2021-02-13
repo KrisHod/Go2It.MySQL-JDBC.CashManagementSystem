@@ -1,5 +1,6 @@
 package service;
 
+import entity.Merchant;
 import entity.Payment;
 import util.PaymentRepository;
 
@@ -8,10 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentService {
-    PaymentRepository paymentRepository = new PaymentRepository();
+    private PaymentRepository paymentRepository = new PaymentRepository();
+    private MerchantService merchantService = new MerchantService();
 
-    public boolean getAll() {
-        return paymentRepository.getAll().isEmpty();
+    public List<Payment> getByMerchant (Merchant merchant){
+        return paymentRepository.getByMerchant(merchant);
     }
 
     public List<Payment> getByPeriod(LocalDate startDate, LocalDate endDate) {
@@ -22,5 +24,11 @@ public class PaymentService {
             }
         }
         return payments;
+    }
+
+    public boolean addPayment(Payment payment) {
+        payment.getMerchant().setNeedToSend(merchantService.calculateNeedToSend(payment));
+        paymentRepository.addPayment(payment);
+        return true;
     }
 }
