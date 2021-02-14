@@ -1,6 +1,7 @@
 package entity;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 public class Merchant {
@@ -15,6 +16,7 @@ public class Merchant {
     private double needToSend;
     private double sent;
     private LocalDate lastSent;
+    private List<Payment> payments;
 
     public Merchant(int id, String name, String bankName, String swift,
                     String account, double charge, int period, double minSum,
@@ -120,6 +122,14 @@ public class Merchant {
         this.lastSent = lastSent;
     }
 
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -147,6 +157,7 @@ public class Merchant {
                 ", needToSend=" + needToSend +
                 ", sent=" + sent +
                 ", lastSent=" + lastSent +
+                ", customerPayments=" + payments +
                 '}';
     }
 }
