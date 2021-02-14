@@ -1,6 +1,7 @@
 package entity;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 public class Customer {
@@ -11,6 +12,7 @@ public class Customer {
     private String ccNo;
     private String ccType;
     private LocalDate maturity;
+    private List<Payment> payments;
 
     public Customer(int id, String name, String address, String email,
                     String ccNo, String ccType, LocalDate maturity) {
@@ -79,6 +81,14 @@ public class Customer {
         this.maturity = maturity;
     }
 
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -102,6 +112,7 @@ public class Customer {
                 ", ccNo='" + ccNo + '\'' +
                 ", ccType='" + ccType + '\'' +
                 ", maturity=" + maturity +
+                ", customerPayments=" + payments +
                 '}';
     }
 }
