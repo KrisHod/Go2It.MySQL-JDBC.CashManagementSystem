@@ -12,14 +12,17 @@ public class Payment {
     private double sumPaid;
     private double chargePaid;
 
-    public Payment(int id, LocalDateTime dt, Merchant merchant, Customer customer,
-                   String goods, double sumPaid, double chargePaid) {
-        this.id = id;
+    public Payment(LocalDateTime dt, Merchant merchant, Customer customer, String goods, double sumPaid) {
         this.dt = dt;
-        this.merchant = merchant;
-        this.customer = customer;
         this.goods = goods;
         this.sumPaid = sumPaid;
+        this.customer = customer;
+        this.merchant = merchant;
+    }
+
+    public Payment(int id, LocalDateTime dt, Merchant merchant, Customer customer, String goods, double sumPaid, double chargePaid) {
+        this(dt, merchant, customer, goods, sumPaid);
+        this.id = id;
         this.chargePaid = chargePaid;
     }
 
