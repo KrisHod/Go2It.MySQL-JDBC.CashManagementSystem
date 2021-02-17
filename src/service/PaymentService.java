@@ -9,12 +9,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentService {
-    private PaymentRepository paymentRepository = new PaymentRepository();
-    private MerchantService merchantService = new MerchantService();
+    private PaymentRepository paymentRepository;
+    private MerchantService merchantService;
+
+    public PaymentService() {
+    }
 
     public List<Payment> getByMerchant (Merchant merchant){
         return paymentRepository.getByMerchant(merchant);
     }
+
+    public PaymentRepository getPaymentRepository() {
+        return paymentRepository;
+    }
+
+    public void setPaymentRepository(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
+
+    public MerchantService getMerchantService() {
+        return merchantService;
+    }
+
+    public void setMerchantService(MerchantService merchantService) {
+        this.merchantService = merchantService;
+    }
+
+    public double getTotalSumPaid(Merchant merchant) { return paymentRepository.getTotalSumPaid(merchant);}
 
     public List<Payment> getByPeriod(LocalDate startDate, LocalDate endDate) {
         List<Payment> payments = new ArrayList<>();
