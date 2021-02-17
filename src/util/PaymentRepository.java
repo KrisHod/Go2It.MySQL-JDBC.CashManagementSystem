@@ -10,8 +10,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentRepository {
-    MerchantRepository merchantRepository = new MerchantRepository();
-    CustomerRepository customerRepository = new CustomerRepository();
+    private CustomerRepository customerRepository;
+    private MerchantRepository merchantRepository;
+
+    public PaymentRepository() {
+    }
+
+    public CustomerRepository getCustomerRepository() {
+        return customerRepository;
+    }
+
+    public void setCustomerRepository(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    public MerchantRepository getMerchantRepository() {
+        return merchantRepository;
+    }
+
+    public void setMerchantRepository(MerchantRepository merchantRepository) {
+        this.merchantRepository = merchantRepository;
+    }
+
+    public PaymentRepository(CustomerRepository customerRepository, MerchantRepository merchantRepository) {
+        this.customerRepository = customerRepository;
+        this.merchantRepository = merchantRepository;
+    }
 
     public List<Payment> getAll() {
         List<Payment> payments = new ArrayList<>();
@@ -20,16 +44,51 @@ public class PaymentRepository {
              PreparedStatement stmt = con.prepareStatement("SELECT * FROM payment")) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                int id = rs.getInt("id");
-                Timestamp dtStamp = rs.getTimestamp("dt");
-                LocalDateTime dt = dtStamp.toLocalDateTime();
-                int merchantId = rs.getInt("merchantId");
-                int customerId = rs.getInt("customerId");
-                String goods = rs.getString("goods");
-                double sumPaid = rs.getDouble("sumPaid");
-                double chargePaid = rs.getDouble("chargePaid");
+                payments.add(getPayment(rs));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error " + ex.getMessage());
+        }
+        return payments;
+    }
 
-                payments.add(new Payment(id, dt, merchantRepository.getById(merchantId), customerRepository.getById(customerId), goods, sumPaid, chargePaid));
+    public Payment getPayment(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        Timestamp dtStamp = rs.getTimestamp("dt");
+        LocalDateTime dt = dtStamp.toLocalDateTime();
+        int merchantId = rs.getInt("merchantId");
+        int customerId = rs.getInt("customerId");
+        String goods = rs.getString("goods");
+        double sumPaid = rs.getDouble("sumPaid");
+        double chargePaid = rs.getDouble("chargePaid");
+
+        return new Payment(id, dt, merchantRepository.getById(merchantId, true),
+                customerRepository.getById(customerId, true), goods, sumPaid, chargePaid);
+    }
+
+    public List<Payment> getByMerchant(Merchant merchant) {
+        List<Payment> payments = new ArrayList<>();
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement stmt = con.prepareStatement("SELECT * FROM payment WHERE " + merchant.getId())) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                payments.add(getPayment(rs));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error " + ex.getMessage());
+        }
+        return payments;
+    }
+
+    public List<Payment> getByCustomer(Customer customer) {
+        List<Payment> payments = new ArrayList<>();
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement stmt = con.prepareStatement("SELECT * FROM payment WHERE " + customer.getId())) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                payments.add(getPayment(rs));
             }
         } catch (SQLException ex) {
             System.out.println("Error " + ex.getMessage());
@@ -40,7 +99,7 @@ public class PaymentRepository {
     public double getTotalSumPaid(Merchant merchant) {
         double totalSum = 0;
         try (Connection conn = DBUtil.getConnection();
-             PreparedStatement statement = conn.prepareStatement("SELECT SUM(sumPaid) FROM payments WHERE merchantId =" + merchant.getId())) {
+             PreparedStatement statement = conn.prepareStatement("SELECT SUM(sumPaid) FROM payment WHERE merchantId =" + merchant.getId())) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 totalSum = rs.getDouble("SUM(sumPaid)");
@@ -53,7 +112,7 @@ public class PaymentRepository {
 
     public void addPayment(Payment payment) {
         try (Connection con = DBUtil.getConnection();
-             PreparedStatement stmt = con.prepareStatement("INSERT INTO payments " +
+             PreparedStatement stmt = con.prepareStatement("INSERT INTO payment " +
                      "(dt, merchantId, customerId, goods, sumPaid, chargePaid) values(?, ?, ?, ?, ?, ?)")) {
             stmt.setTimestamp(1, Timestamp.valueOf(payment.getDt()));
             stmt.setInt(2, payment.getMerchant().getId());
@@ -66,53 +125,5 @@ public class PaymentRepository {
         } catch (SQLException ex) {
             System.out.println("Error " + ex.getMessage());
         }
-    }
-
-    public List<Payment> getByMerchant (Merchant merchant){
-        List<Payment> payments = new ArrayList<>();
-
-        try (Connection con = DBUtil.getConnection();
-             PreparedStatement stmt = con.prepareStatement("SELECT * FROM payment WHERE " + merchant.getId() )) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                Timestamp dtStamp = rs.getTimestamp("dt");
-                LocalDateTime dt = dtStamp.toLocalDateTime();
-                int merchantId = rs.getInt("merchantId");
-                int customerId = rs.getInt("customerId");
-                String goods = rs.getString("goods");
-                double sumPaid = rs.getDouble("sumPaid");
-                double chargePaid = rs.getDouble("chargePaid");
-
-                payments.add(new Payment(id, dt, merchant, customerRepository.getById(customerId), goods, sumPaid, chargePaid));
-            }
-        } catch (SQLException ex) {
-            System.out.println("Error " + ex.getMessage());
-        }
-        return payments;
-    }
-
-    public List<Payment> getByCustomer (Customer customer){
-        List<Payment> payments = new ArrayList<>();
-
-        try (Connection con = DBUtil.getConnection();
-             PreparedStatement stmt = con.prepareStatement("SELECT * FROM payment WHERE " + customer.getId() )) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                Timestamp dtStamp = rs.getTimestamp("dt");
-                LocalDateTime dt = dtStamp.toLocalDateTime();
-                int merchantId = rs.getInt("merchantId");
-                int customerId = rs.getInt("customerId");
-                String goods = rs.getString("goods");
-                double sumPaid = rs.getDouble("sumPaid");
-                double chargePaid = rs.getDouble("chargePaid");
-
-                payments.add(new Payment(id, dt, merchantRepository.getById(id), customer, goods, sumPaid, chargePaid));
-            }
-        } catch (SQLException ex) {
-            System.out.println("Error " + ex.getMessage());
-        }
-        return payments;
     }
 }
