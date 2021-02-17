@@ -12,15 +12,33 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class ReportService {
-    MerchantService merchantService = new MerchantService();
-    PaymentRepository paymentRepository = new PaymentRepository();
+public class MerchantReportService {
+    MerchantService merchantService;
+    PaymentService paymentService;
 
+    public MerchantReportService() {
+    }
+
+    public MerchantService getMerchantService() {
+        return merchantService;
+    }
+
+    public void setMerchantService(MerchantService merchantService) {
+        this.merchantService = merchantService;
+    }
+
+    public PaymentService getPaymentService() {
+        return paymentService;
+    }
+
+    public void setPaymentService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 
     //The report shows a total sum paid for a merchant with a given id (argument), merchant_id, title and lastSent info
     public void showReportById(int id) {
-        Merchant merchant = merchantService.getById(id);
-        System.out.println("Total sum paid: " + paymentRepository.getTotalSumPaid(merchant) + ". Merchant Id: " + id + "," +
+        Merchant merchant = merchantService.getById(id, true);
+        System.out.println("Total sum paid: " + paymentService.getTotalSumPaid(merchant) + ". Merchant Id: " + id + "," +
                 " title: " + merchant.getName() + ", last sent: " + merchant.getLastSent());
     }
 
