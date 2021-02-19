@@ -114,7 +114,7 @@ public class PaymentRepository {
         try (Connection con = DBUtil.getConnection();
              PreparedStatement stmt = con.prepareStatement("INSERT INTO payment " +
                      "(dt, merchantId, customerId, goods, sumPaid, chargePaid) values(?, ?, ?, ?, ?, ?)")) {
-            stmt.setTimestamp(1, Timestamp.valueOf(payment.getDt()));
+            stmt.setTimestamp(1, Timestamp.valueOf(payment.getDateTime()));
             stmt.setInt(2, payment.getMerchant().getId());
             stmt.setInt(3, payment.getCustomer().getId());
             stmt.setString(4, payment.getGoods());

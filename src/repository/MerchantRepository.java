@@ -86,7 +86,7 @@ public class MerchantRepository {
                 stmt.setDouble(1, 0);                                           //reset value of needToSend
                 payment.getMerchant().setSent(payment.getMerchant().getSent() + payment.getMerchant().getNeedToSend());   //add this sum(needToSend) to existing amount(sent)
                 stmt.setDouble(2, payment.getMerchant().getSent());
-                stmt.setDate(3, java.sql.Date.valueOf(payment.getDt().toLocalDate())); //update the date of the last transaction
+                stmt.setDate(3, java.sql.Date.valueOf(payment.getDateTime().toLocalDate())); //update the date of the last transaction
             } else {
                 stmt = con.prepareStatement("UPDATE merchant SET needToSend = ? WHERE id = " + payment.getMerchant().getId());
                 stmt.setDouble(1, payment.getMerchant().getNeedToSend());
