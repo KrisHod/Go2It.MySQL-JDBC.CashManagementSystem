@@ -1,7 +1,8 @@
-package util;
+package repository;
 
 import entity.Customer;
 import entity.Payment;
+import util.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerRepository {
-    PaymentRepository paymentRepository;
+    private PaymentRepository paymentRepository;
 
     public PaymentRepository getPaymentRepository() {
         return paymentRepository;
@@ -29,7 +30,7 @@ public class CustomerRepository {
         this.paymentRepository = paymentRepository;
     }
 
-    public Customer getCustomer(ResultSet rs, boolean isPaymentKnown) throws SQLException {
+    private Customer getCustomer(ResultSet rs, boolean isPaymentKnown) throws SQLException {
         int id = rs.getInt("id");
         String customerName = rs.getString("name");
         String address = rs.getString("address");
@@ -47,8 +48,9 @@ public class CustomerRepository {
 
     public Customer getById(int id, boolean isPaymentKnown) {
         Customer customer = null;
+        String sql = "SELECT * FROM customer WHERE id=" + id;
         try (Connection con = DBUtil.getConnection();
-             PreparedStatement stmt = con.prepareStatement("SELECT * FROM customer WHERE id=" + id)) {
+             PreparedStatement stmt = con.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 customer = getCustomer(rs, isPaymentKnown);
@@ -61,9 +63,10 @@ public class CustomerRepository {
 
     public List<Customer> getAll() {
         List<Customer> customers = new ArrayList<>();
+        String sql = "SELECT * FROM customer";
 
         try (Connection con = DBUtil.getConnection()) {
-            PreparedStatement stmt = con.prepareStatement("SELECT * FROM customer");
+            PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 int id = rs.getInt("id");
