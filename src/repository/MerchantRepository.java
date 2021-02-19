@@ -1,7 +1,8 @@
-package util;
+package repository;
 
 import entity.Merchant;
 import entity.Payment;
+import util.DBUtil;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantRepository {
-    PaymentRepository paymentRepository;
+    private PaymentRepository paymentRepository;
 
     public PaymentRepository getPaymentRepository() {
         return paymentRepository;
@@ -26,7 +27,7 @@ public class MerchantRepository {
         this.paymentRepository = paymentRepository;
     }
 
-    public Merchant getMerchant(ResultSet rs, boolean isPaymentKnown) throws SQLException {
+    private Merchant getMerchant(ResultSet rs, boolean isPaymentKnown) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         String bankName = rs.getString("bankName");
@@ -49,8 +50,9 @@ public class MerchantRepository {
 
     public Merchant getById(int id, boolean isPaymentKnown) {
         Merchant merchant = null;
+        String sql = "SELECT * FROM merchant WHERE id=" + id;
         try (Connection con = DBUtil.getConnection();
-             PreparedStatement stmt = con.prepareStatement("SELECT * FROM merchant WHERE id=" + id)) {
+             PreparedStatement stmt = con.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 merchant = getMerchant(rs, isPaymentKnown);
@@ -64,9 +66,10 @@ public class MerchantRepository {
 
     public List<Merchant> getAll() {
         List<Merchant> merchants = new ArrayList<>();
+        String sql = "SELECT * FROM merchant";
 
         try (Connection con = DBUtil.getConnection();
-             PreparedStatement stmt = con.prepareStatement("SELECT * FROM merchant")) {
+             PreparedStatement stmt = con.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -80,17 +83,22 @@ public class MerchantRepository {
 
     public void update(Payment payment) {
         PreparedStatement stmt = null;
+        Merchant merchant = payment.getMerchant();
         try (Connection con = DBUtil.getConnection()) {
-            if (payment.getMerchant().getNeedToSend() > payment.getMerchant().getMinSum()) {
-                stmt = con.prepareStatement("UPDATE merchant SET needToSend = ?, sent = ?, lastSent = ? WHERE id =" + payment.getMerchant().getId());
-                stmt.setDouble(1, 0);                                           //reset value of needToSend
-                payment.getMerchant().setSent(payment.getMerchant().getSent() + payment.getMerchant().getNeedToSend());   //add this sum(needToSend) to existing amount(sent)
-                stmt.setDouble(2, payment.getMerchant().getSent());
+            String sql;
+            if (merchant.getNeedToSend() > merchant.getMinSum()) {
+                sql = "UPDATE merchant SET needToSend = ?, sent = ?, lastSent = ? WHERE id =" + merchant.getId();
+                stmt = con.prepareStatement(sql);
+                stmt.setDouble(1, 0);                      //reset value of needToSend
+                merchant.setSent(merchant.getSent() + merchant.getNeedToSend());   //add this sum(needToSend) to existing amount(sent)
+                stmt.setDouble(2, merchant.getSent());
                 stmt.setDate(3, java.sql.Date.valueOf(payment.getDateTime().toLocalDate())); //update the date of the last transaction
             } else {
-                stmt = con.prepareStatement("UPDATE merchant SET needToSend = ? WHERE id = " + payment.getMerchant().getId());
-                stmt.setDouble(1, payment.getMerchant().getNeedToSend());
+                sql = "UPDATE merchant SET needToSend = ? WHERE id = " + merchant.getId();
+                stmt = con.prepareStatement(sql);
+                stmt.setDouble(1, merchant.getNeedToSend());
             }
+            stmt.executeUpdate();
         } catch (SQLException ex) {
             System.out.println("Error " + ex.getMessage());
         }
