@@ -4,10 +4,10 @@ import reportService.MerchantReportService;
 import service.CustomerService;
 import service.MerchantService;
 import service.PaymentService;
-import util.CustomerRepository;
+import repository.CustomerRepository;
 import util.FileUtils;
-import util.MerchantRepository;
-import util.PaymentRepository;
+import repository.MerchantRepository;
+import repository.PaymentRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ public class Main {
         merchantReportService.setPaymentService(paymentService);
 
         // clause 2
-        merchantReportService.showReportById(1);
+        merchantReportService.showTotalSumPaid(1);
 
         // clause 3
         merchantReportService.showSortedDescendingOrder();
