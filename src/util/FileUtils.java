@@ -12,11 +12,6 @@ import java.util.List;
 public class FileUtils {
 
     public void writeMerchants(MerchantService merchantService) {
-//        List<List<String>> rows = Arrays.asList(
-//                Arrays.asList("Jean", "author", "Java"),
-//                Arrays.asList("David", "editor", "Python"),
-//                Arrays.asList("Scott", "editor", "Node.js")
-//        );
         List<Merchant> merchants = merchantService.getAll();
 
         try (FileWriter csvWriter = new FileWriter("Merchants_2020_03_08.csv");) {
@@ -50,12 +45,9 @@ public class FileUtils {
                         row.getLastSent() == null ? null : row.getLastSent().format(DateTimeFormatter.ofPattern("dd.MMMM yyyy"))));
                 csvWriter.append("\n");
             }
-
             csvWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
