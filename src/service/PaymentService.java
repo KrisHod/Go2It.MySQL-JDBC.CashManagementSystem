@@ -2,7 +2,7 @@ package service;
 
 import entity.Merchant;
 import entity.Payment;
-import util.PaymentRepository;
+import repository.PaymentRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class PaymentService {
     public List<Payment> getByPeriod(LocalDate startDate, LocalDate endDate) {
         List<Payment> payments = new ArrayList<>();
         for (Payment p : paymentRepository.getAll()) {
-            if (p.getDt().toLocalDate().isAfter(startDate) && p.getDt().toLocalDate().isBefore(endDate)) {
+            if (p.getDateTime().toLocalDate().isAfter(startDate) && p.getDateTime().toLocalDate().isBefore(endDate)) {
                 payments.add(p);
             }
         }
