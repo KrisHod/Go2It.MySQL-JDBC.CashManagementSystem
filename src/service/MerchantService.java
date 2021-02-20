@@ -2,7 +2,7 @@ package service;
 
 import entity.Merchant;
 import entity.Payment;
-import util.MerchantRepository;
+import repository.MerchantRepository;
 
 import java.util.List;
 
