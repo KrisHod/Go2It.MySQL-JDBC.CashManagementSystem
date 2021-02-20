@@ -2,7 +2,7 @@ package service;
 
 import entity.Customer;
 import entity.Payment;
-import util.CustomerRepository;
+import repository.CustomerRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,7 +42,7 @@ public class CustomerService {
     public Customer findMostActiveCustomer(LocalDate startDate, LocalDate endDate) {
         Customer theMostActiveCustomer = null;
         List<Payment> paymentsByPeriod = paymentService.getByPeriod(startDate, endDate);
-        List<Customer> customers = customerRepository.getAll();
+        List<Customer> customers = getAll();
         for (Payment p : paymentsByPeriod) {
             for (Customer c : customers) {
                 if (p.getCustomer().equals(c)) {
